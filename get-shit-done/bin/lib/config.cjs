@@ -28,6 +28,7 @@ const VALID_CONFIG_KEYS = new Set([
   'workflow.subagent_timeout',
   'hooks.context_warnings',
   'features.thinking_partner',
+  'context',
   'project_code', 'phase_naming',
   'manager.flags.discuss', 'manager.flags.plan', 'manager.flags.execute',
   'response_language',
@@ -335,6 +336,11 @@ function cmdConfigSet(cwd, keyPath, value, raw) {
   else if (!isNaN(value) && value !== '') parsedValue = Number(value);
   else if (typeof value === 'string' && (value.startsWith('[') || value.startsWith('{'))) {
     try { parsedValue = JSON.parse(value); } catch { /* keep as string */ }
+  }
+
+  const VALID_CONTEXT_VALUES = ['dev', 'research', 'review'];
+  if (keyPath === 'context' && !VALID_CONTEXT_VALUES.includes(String(parsedValue))) {
+    error(`Invalid context value '${value}'. Valid values: ${VALID_CONTEXT_VALUES.join(', ')}`);
   }
 
   const setConfigValueResult = setConfigValue(cwd, keyPath, parsedValue);
